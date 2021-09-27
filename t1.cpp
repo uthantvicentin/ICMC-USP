@@ -96,6 +96,7 @@ int main(){
 	for(int i = 0 ; i < qtStatesInitials ; ++i) statesInitials.push_back(i);
 
 	cin >> qtStatesAcceptance;
+	
 	for(int i = 0 ; i < qtStatesAcceptance ; ++i){
 		cin >> acceptance;
 		statesAcceptance.push_back(acceptance);
