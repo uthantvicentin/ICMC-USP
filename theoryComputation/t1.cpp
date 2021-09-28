@@ -6,120 +6,122 @@ int flag = 0;
 int counter = 0;
 
 struct Edge {
-	int src, dest;
-	string symbolTransition;
+    int src, dest;
+    string symbolTransition;
 };
 
 typedef pair<int, pair<string, pair<bool, bool>>> Pair;
 
 class Graph {
-	public:
-		vector<vector<Pair>> adjList;
+    public:
+        vector<vector<Pair>> adjList;
 
-		Graph(vector<Edge> const &edges, int N, vector<int> init, vector<int> accept) {
+        Graph(vector<Edge> const &edges, int N, vector<int> init, vector<int> accept) {
 
-			vector<int>::iterator it;
+            vector<int>::iterator it;
 
-			adjList.resize(N);
+            adjList.resize(N);
 
-			for (auto &edge: edges) {
-				bool initial = false, acceptance = false;
-				int src = edge.src;
-				int dest = edge.dest;
-				string symbolTransition = edge.symbolTransition;
+            for (auto &edge: edges) {
+                bool initial = false, acceptance = false;
+                int src = edge.src;
+                int dest = edge.dest;
+                string symbolTransition = edge.symbolTransition;
 
-				it = find (init.begin(), init.end(), src);
-				if (it != init.end()) initial = true;
+                it = find (init.begin(), init.end(), src);
+                if (it != init.end()) initial = true;
 
-				it = find(accept.begin(), accept.end(), src);
-				if (it != accept.end()) acceptance = true;
+                it = find(accept.begin(), accept.end(), src);
+                if (it != accept.end()) acceptance = true;
 
-				adjList[src].push_back(make_pair(dest, 
-							make_pair(symbolTransition,make_pair(initial,acceptance))));
-			}
-		}
+                adjList[src].push_back(make_pair(dest, 
+                            make_pair(symbolTransition,make_pair(initial,acceptance))));
+            }
+        }
 };
 
 int solve(Graph const &graph, int i, string chain, int pos){
 
-	for (Pair v: graph.adjList[i]){
-		if(pos == chain.size() and counter < 1){
-			counter++;
-			if(v.second.second.second == 1){
-				flag = 1;
-			}
-			return 0;
-		}
-		else if(v.second.first[0] == chain[pos]){ 
-			solve(graph, v.first, chain, ++pos);
-		}
-	}
+    for (Pair v: graph.adjList[i]){
+        if(flag < 1 and counter < 1){
+        //cout << "(" << i << ", " << v.first << ", " << v.second.first << ", " <<  v.second.second.first << ", "<< v.second.second.second << ") ";
+            if(pos >= chain.size()){
+                counter++;
+                if(v.second.second.second == 1) flag = 1;
+            }
+            else if(chain[pos] == '-'){ 
+                solve(graph, v.first, chain, ++pos);
+            }
+            else if(v.second.first[0] == chain[pos]) solve(graph, v.first, chain, ++pos);
+        }
+    }
 
-	return 0;
+    return 0;
 }
 
 void walkGraph(Graph const &graph, int N, string chain){
 
-	for (int i = 0; i < N; i++){
-		for (Pair v: graph.adjList[i]){
-			if(v.second.second.first == 1){
-				counter = 0;
-				solve(graph, i, chain, 0);
-				if(flag) break;
-			}
-		}
-	}
+    for (int i = 0; i < N; i++){
+        for (Pair v: graph.adjList[i]){
+            if(v.second.second.first == 1){
+         //       cout << "antes de entrar na recursao " << "(" << i << ", " << v.first << ", " << v.second.first << ", " <<  v.second.second.first << ", "<< v.second.second.second << ") " << endl;
+                counter = 0;
+                solve(graph, i, chain, 0);
+                if(flag) break;
+            }
+        }
+    }
 
-	if(flag) cout << "aceita\n";
-	else cout << "rejeita\n";
+    if(flag) cout << "aceita\n";
+    else cout << "rejeita\n";
 
 }
 
 int main(){
 
-	int qtStates, qtSymbolsTerminals, qtStatesInitials,qtStatesAcceptance,
-			qtTransitions, src, dest, qtCadeias, acceptance;
+    int qtStates, qtSymbolsTerminals, qtStatesInitials,qtStatesAcceptance,
+        qtTransitions, src, dest, qtCadeias, acceptance;
 
-	string symbolsTerminals, symbol;
+    string symbolsTerminals, symbol;
 
-	Edge insere;
-	vector <Edge> edges;
-	vector <string> chainProcessing;
-	vector <int> statesInitials;
-	vector <int> statesAcceptance;
+    Edge insert;
+    vector <Edge> edges;
+    vector <string> chainProcessing;
+    vector <int> statesInitials;
+    vector <int> statesAcceptance;
 
-	cin >> qtStates;
-	cin >> qtSymbolsTerminals;
-	getline(cin, symbolsTerminals);	
+    cin >> qtStates;
+    cin >> qtSymbolsTerminals;
+    getline(cin, symbolsTerminals);	
 
-	cin >> qtStatesInitials;
-	for(int i = 0 ; i < qtStatesInitials ; ++i) statesInitials.push_back(i);
+    cin >> qtStatesInitials;
+    for(int i = 0 ; i < qtStatesInitials ; ++i) statesInitials.push_back(i);
 
-	cin >> qtStatesAcceptance;
-	
-	for(int i = 0 ; i < qtStatesAcceptance ; ++i){
-		cin >> acceptance;
-		statesAcceptance.push_back(acceptance);
-	}
+    cin >> qtStatesAcceptance;
 
-	cin >> qtTransitions;
+    for(int i = 0 ; i < qtStatesAcceptance ; ++i){
+        cin >> acceptance;
+        statesAcceptance.push_back(acceptance);
+    }
 
-	for(int i = 0 ; i < qtTransitions ; ++i){
-		cin >> src >> symbol >> dest;
-		insere = {src, dest, symbol};	
-		edges.push_back(insere);
-	}
+    cin >> qtTransitions;
 
-	Graph graph(edges, qtStates, statesInitials, statesAcceptance);
+    for(int i = 0 ; i < qtTransitions ; ++i){
+        cin >> src >> symbol >> dest;
+        insert = {src, dest, symbol};	
+        edges.push_back(insert);
+    }
 
-	cin >> qtCadeias;	
+    Graph graph(edges, qtStates, statesInitials, statesAcceptance);
 
-	for(int i = 0 ; i < qtCadeias ; ++i){
-		flag = 0;
+    cin >> qtCadeias;	
 
-		cin >> symbol;
-		walkGraph(graph, qtStates, symbol);
-	}
+    for(int i = 0 ; i < qtCadeias ; ++i){
+        flag = 0;
 
-	return 0;
+        cin >> symbol;
+        walkGraph(graph, qtStates, symbol);
+    }
+
+    return 0;
 }
